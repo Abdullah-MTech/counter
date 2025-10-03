@@ -13,10 +13,26 @@ class ResponsiveHelper {
   
   static double getHeight(BuildContext context) => MediaQuery.of(context).size.height;
 
+  static bool isLandscape(BuildContext context) => MediaQuery.of(context).orientation == Orientation.landscape;
+
+  
+
+
+    static int getCrossAxisCount(BuildContext context) {
+    if (isLargeTablet(context)) {
+      return isLandscape(context) ? 4 : 3;
+    } else if (isTablet(context)) {
+      return isLandscape(context) ? 3 : 2;
+    } else {
+      return isLandscape(context) ? 2 : 1;
+    }
+  }
+  
+
   // Responsive font sizes
   static double getResponsiveFontSize(BuildContext context, double baseSize) {
     double width = getWidth(context);
-    if (width < 900) return baseSize * 0.8;
+    if (width < 900) return baseSize * 0.5;
     if (width < 1200) return baseSize * 1.0;
     return baseSize * 1.2;
   }

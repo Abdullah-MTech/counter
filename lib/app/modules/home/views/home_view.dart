@@ -96,20 +96,32 @@ class HomeView extends GetView<HomeController> {
     final columns = ResponsiveHelper.getGridColumns(context);
     final padding = ResponsiveHelper.getResponsivePadding(context, 16);
 
-    return Obx(() => GridView.builder(
-          padding: EdgeInsets.all(padding),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columns,
-            childAspectRatio: ResponsiveHelper.isLargeTablet(context) ? 1.4 : 1.2,
-            crossAxisSpacing: padding,
-            mainAxisSpacing: padding,
-          ),
-          itemCount: controller.orders.length,
-          itemBuilder: (context, index) {
-            final order = controller.orders[index];
-            return _buildOrderCard(context, order);
-          },
-        ));
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate the number of columns based on the available width
+        final crossAxisCount = ResponsiveHelper.getCrossAxisCount(context);
+        final availableWidth = constraints.maxWidth;
+        final itemWidth = (availableWidth - (12.0 * (crossAxisCount - 1))) / crossAxisCount;
+        
+        // Calculate a fixed height for grid items to prevent overflow
+        // Adjust this value based on your content needs
+        final fixedItemHeight = ResponsiveHelper.isLargeTablet(context) ? 220.0 : 250.0;
+        final calculatedAspectRatio = itemWidth / fixedItemHeight;
+        return GridView.builder(
+              padding: EdgeInsets.all(padding),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                childAspectRatio: calculatedAspectRatio,
+                crossAxisSpacing: padding,
+                mainAxisSpacing: padding,
+              ),
+              itemCount: controller.orders.length,
+              itemBuilder: (context, index) {
+                final order = controller.orders[index];
+                return _buildOrderCard(context, order);
+              },
+            );
+  });
   }
 
   Widget _buildOrderCard(BuildContext context, OrderModel order) {
@@ -270,7 +282,7 @@ class HomeView extends GetView<HomeController> {
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: ResponsiveHelper.getResponsivePadding(context, 20),
-              vertical: ResponsiveHelper.getResponsivePadding(context, 24),
+              vertical: ResponsiveHelper.getResponsivePadding(context, 38),
             ),
             decoration: BoxDecoration(
               color: ColorHelper.primaryPurple,
